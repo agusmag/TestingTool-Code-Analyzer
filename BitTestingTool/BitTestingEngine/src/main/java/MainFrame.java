@@ -508,6 +508,7 @@ public class MainFrame extends javax.swing.JFrame {
             rutaArchivo = path;
             DefaultListModel file = new DefaultListModel();
             DefaultListModel clases = new DefaultListModel();
+            DefaultListModel metodos = new DefaultListModel();
             file.addElement(path);
             jListDirectorio.setModel(file);
             jListDirectorio.setForeground(Color.black);
@@ -516,7 +517,8 @@ public class MainFrame extends javax.swing.JFrame {
                     clases.addElement(fileInside.getName());
             }
             jListClases.setModel(clases);
-
+            metodos.addElement("");
+            jListMetodos.setModel(metodos);
         }
     }//GEN-LAST:event_jListDirectorioMouseClicked
 
@@ -566,9 +568,29 @@ public class MainFrame extends javax.swing.JFrame {
                 }
             }
         }
+        int CC = calcularCC(codigoMetodo);
+        jLabel17.setText(String.valueOf(CC));
         jTextArea1.setText(codigoMetodo);
     }//GEN-LAST:event_jListMetodosValueChanged
 
+    public static int calcularCC(String codigoMetodo){
+        int np = 0;
+        String nodosPredicado[] = {" if ", " while ", " for ", "case ", 
+            "ifxyz", "whilexyz", "forxyz"};
+        String codigoActual;
+        String codigoMetodoModif = codigoMetodo;
+        codigoMetodoModif = codigoMetodoModif.replaceAll("\\(", "xyz");
+        
+        for(String palabra: nodosPredicado){
+            codigoActual = codigoMetodoModif;
+            while (codigoActual.indexOf(palabra) > -1) {
+               codigoActual = codigoActual.substring(codigoActual.indexOf(
+	       palabra)+palabra.length(),codigoActual.length());
+               np++;
+	    }
+        }
+        return np + 1;
+    }
     /**
      * @param args the command line arguments
      */
