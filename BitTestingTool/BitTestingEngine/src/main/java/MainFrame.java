@@ -4,6 +4,7 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
+import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 import java.awt.Color;
 import java.io.File;
@@ -568,8 +569,29 @@ public class MainFrame extends javax.swing.JFrame {
                 }
             }
         }
+        int lineasCodigo = contarLineas(codigoMetodo);
+        jLabel14.setText(String.valueOf(lineasCodigo));
+        
+        /*
+        List<Comment> comentariosList = cu.getAllContainedComments();
+        int cantComentarios = comentariosList.size();
+        jLabel15.setText(String.valueOf(cantComentarios));
+        */
+        
+        /*
+        double porcComentado = ((double)cantComentarios/lineasCodigo) * 100;
+        jLabel16.setText(String.valueOf(porcComentado));
+        */
+        
         int CC = calcularCC(codigoMetodo);
         jLabel17.setText(String.valueOf(CC));
+        if(CC<=7)
+            jLabel17.setForeground(Color.green);
+        else if(CC<=10)
+            jLabel17.setForeground(Color.yellow);
+        else
+            jLabel17.setForeground(Color.red);
+        
         jTextArea1.setText(codigoMetodo);
     }//GEN-LAST:event_jListMetodosValueChanged
 
@@ -664,4 +686,14 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
+
+    private static int contarLineas(String codigoMetodo) {
+        int cant = 0;
+        int total = codigoMetodo.length();
+        for (int i = 0; i < total; ++i) {
+            char letra = codigoMetodo.charAt(i);
+            if (letra ==  '\n') ++cant; 
+        }
+        return cant;
+    }
 }
