@@ -2,6 +2,8 @@
 import HerramientasDeParser.MethodNamePrinter;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 import java.awt.Color;
 import java.io.File;
@@ -19,6 +21,7 @@ public class MainFrame extends javax.swing.JFrame {
     private int yMouse;
     private int xMouse;
     private String rutaArchivo;
+    CompilationUnit cu = null;
     public MainFrame() {
         initComponents();
     }
@@ -72,6 +75,11 @@ public class MainFrame extends javax.swing.JFrame {
         jTextArea1.setRows(5);
         jScrollPane1.setViewportView(jTextArea1);
 
+        jListMetodos.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                jListMetodosValueChanged(evt);
+            }
+        });
         jScrollPane2.setViewportView(jListMetodos);
 
         jListClases.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -475,12 +483,11 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jListClasesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListClasesValueChanged
-        String selectedMethod = jListClases.getSelectedValue();
-        System.out.println("Seleccionado: " + selectedMethod);
+        String claseSeleccionada = jListClases.getSelectedValue();
+        System.out.println("Seleccionado: " + claseSeleccionada);
         DefaultListModel lista = new DefaultListModel();
-        CompilationUnit cu = null;
         try {
-            cu = JavaParser.parse(new File(rutaArchivo +"\\"+ selectedMethod));
+            cu = JavaParser.parse(new File(rutaArchivo +"\\"+ claseSeleccionada));
         } catch (FileNotFoundException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -548,6 +555,19 @@ public class MainFrame extends javax.swing.JFrame {
         xMouse = evt.getX();
         yMouse = evt.getY();
     }//GEN-LAST:event_jPanel2MousePressed
+
+    private void jListMetodosValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListMetodosValueChanged
+        String metodoElegido = jListMetodos.getSelectedValue();
+        String codigoMetodo = "";
+        for (TypeDeclaration<?> type : cu.getTypes()) {
+            for (MethodDeclaration method : type.getMethods()) {
+                if(method.getNameAsString().equals(metodoElegido)){
+                    codigoMetodo = method.toString();
+                }
+            }
+        }
+        jTextArea1.setText(codigoMetodo);
+    }//GEN-LAST:event_jListMetodosValueChanged
 
     /**
      * @param args the command line arguments
