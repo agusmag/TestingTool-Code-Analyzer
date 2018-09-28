@@ -482,7 +482,8 @@ public class MainFrame extends javax.swing.JFrame {
             jList3.setModel(file);
             jList3.setForeground(Color.black);
             for (File fileInside : fileChooser.getSelectedFile().listFiles()) {
-                methods.addElement(fileInside.getName());
+                if(fileInside.getName().endsWith(".java"))
+                    methods.addElement(fileInside.getName());
             }
             jList2.setModel(methods);
 
