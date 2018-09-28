@@ -1,6 +1,15 @@
 
+import HerramientasDeParser.MethodNamePrinter;
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.visitor.VoidVisitor;
 import java.awt.Color;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -9,6 +18,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private int yMouse;
     private int xMouse;
+    private String rutaArchivo;
     public MainFrame() {
         initComponents();
     }
@@ -468,6 +478,20 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void jList2ValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jList2ValueChanged
         String selectedMethod = jList2.getSelectedValue();
+        System.out.println("Seleccionado: " + selectedMethod);
+        DefaultListModel lista = new DefaultListModel();
+        CompilationUnit cu = null;
+        try {
+            cu = JavaParser.parse(new File(rutaArchivo +"\\"+ selectedMethod));
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        List<String> methodNames = new ArrayList<>();
+        VoidVisitor<List<String>> methodNameCollector = new MethodNamePrinter();
+        methodNameCollector.visit(cu, methodNames);
+        methodNames.forEach(n -> lista.addElement(n));
+
+        jList1.setModel(lista);
     }//GEN-LAST:event_jList2ValueChanged
 
     private void jList3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jList3MouseClicked
@@ -476,6 +500,7 @@ public class MainFrame extends javax.swing.JFrame {
         int option = fileChooser.showOpenDialog(this);
         if (option == JFileChooser.APPROVE_OPTION){
             String path = fileChooser.getSelectedFile().toString();
+            rutaArchivo = path;
             DefaultListModel file = new DefaultListModel();
             DefaultListModel methods = new DefaultListModel();
             file.addElement(path);
