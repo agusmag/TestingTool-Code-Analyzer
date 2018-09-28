@@ -577,11 +577,11 @@ public class MainFrame extends javax.swing.JFrame {
         int cantComentarios = comentariosList.size();
         jLabel15.setText(String.valueOf(cantComentarios));
         */
+        int cantComentarios = contarComentarios(codigoMetodo);
+        jLabel15.setText(String.valueOf(cantComentarios));
         
-        /*
         double porcComentado = ((double)cantComentarios/lineasCodigo) * 100;
-        jLabel16.setText(String.valueOf(porcComentado));
-        */
+        jLabel16.setText(String.format("%.2f",porcComentado));
         
         int CC = calcularCC(codigoMetodo);
         jLabel17.setText(String.valueOf(CC));
@@ -595,7 +595,7 @@ public class MainFrame extends javax.swing.JFrame {
         jTextArea1.setText(codigoMetodo);
     }//GEN-LAST:event_jListMetodosValueChanged
 
-    public static int calcularCC(String codigoMetodo){
+    private int calcularCC(String codigoMetodo){
         int np = 0;
         String nodosPredicado[] = {" if ", " while ", " for ", "case ", 
             "ifxyz", "whilexyz", "forxyz"};
@@ -687,7 +687,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
 
-    private static int contarLineas(String codigoMetodo) {
+    private int contarLineas(String codigoMetodo) {
         int cant = 0;
         int total = codigoMetodo.length();
         for (int i = 0; i < total; ++i) {
@@ -695,5 +695,20 @@ public class MainFrame extends javax.swing.JFrame {
             if (letra ==  '\n') ++cant; 
         }
         return cant;
+    }
+
+    private int contarComentarios(String codigoMetodo) {
+        int comentarios = 0;
+        String codigoActual = codigoMetodo;
+        String listaComent[] = {"//", "/\\*"};
+        for(String barra: listaComent){
+            codigoActual = codigoMetodo;
+            while (codigoActual.indexOf(barra) > -1) {
+               codigoActual = codigoActual.substring(codigoActual.indexOf(
+	       barra)+barra.length(),codigoActual.length());
+               comentarios++;
+	    }
+        }
+        return comentarios;
     }
 }
