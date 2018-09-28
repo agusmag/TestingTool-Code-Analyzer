@@ -30,11 +30,11 @@ public class MainFrame extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
+        jListMetodos = new javax.swing.JList<>();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jList2 = new javax.swing.JList<>();
+        jListClases = new javax.swing.JList<>();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jList3 = new javax.swing.JList<>();
+        jListDirectorio = new javax.swing.JList<>();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -72,29 +72,29 @@ public class MainFrame extends javax.swing.JFrame {
         jTextArea1.setRows(5);
         jScrollPane1.setViewportView(jTextArea1);
 
-        jScrollPane2.setViewportView(jList1);
+        jScrollPane2.setViewportView(jListMetodos);
 
-        jList2.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+        jListClases.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                jList2ValueChanged(evt);
+                jListClasesValueChanged(evt);
             }
         });
-        jScrollPane3.setViewportView(jList2);
+        jScrollPane3.setViewportView(jListClases);
 
-        jList3.setForeground(new java.awt.Color(204, 204, 204));
-        jList3.setModel(new javax.swing.AbstractListModel<String>() {
+        jListDirectorio.setForeground(new java.awt.Color(204, 204, 204));
+        jListDirectorio.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Seleccione una carpeta con archivos .java haciendo click acá" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        jList3.setToolTipText("");
-        jList3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jList3.addMouseListener(new java.awt.event.MouseAdapter() {
+        jListDirectorio.setToolTipText("");
+        jListDirectorio.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jListDirectorio.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jList3MouseClicked(evt);
+                jListDirectorioMouseClicked(evt);
             }
         });
-        jScrollPane4.setViewportView(jList3);
+        jScrollPane4.setViewportView(jListDirectorio);
 
         jLabel1.setBackground(new java.awt.Color(0, 51, 204));
         jLabel1.setFont(new java.awt.Font("Comic Sans MS", 0, 11)); // NOI18N
@@ -337,7 +337,7 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel22.setForeground(new java.awt.Color(0, 153, 255));
         jLabel22.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel22.setText("X");
-        jLabel22.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel22.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jLabel22.setName(""); // NOI18N
         jLabel22.setOpaque(true);
         jLabel22.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -365,7 +365,7 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel25.setForeground(new java.awt.Color(0, 153, 255));
         jLabel25.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel25.setText("_");
-        jLabel25.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel25.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jLabel25.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jLabel25.setOpaque(true);
         jLabel25.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -415,9 +415,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(jLabel23)
                         .addGap(0, 0, 0)
                         .addComponent(jLabel26, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addGap(0, 0, 0)
-                        .addComponent(jLabel24, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(jLabel24, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(0, 0, 0))
         );
 
@@ -476,8 +474,8 @@ public class MainFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jList2ValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jList2ValueChanged
-        String selectedMethod = jList2.getSelectedValue();
+    private void jListClasesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListClasesValueChanged
+        String selectedMethod = jListClases.getSelectedValue();
         System.out.println("Seleccionado: " + selectedMethod);
         DefaultListModel lista = new DefaultListModel();
         CompilationUnit cu = null;
@@ -491,10 +489,10 @@ public class MainFrame extends javax.swing.JFrame {
         methodNameCollector.visit(cu, methodNames);
         methodNames.forEach(n -> lista.addElement(n));
 
-        jList1.setModel(lista);
-    }//GEN-LAST:event_jList2ValueChanged
+        jListMetodos.setModel(lista);
+    }//GEN-LAST:event_jListClasesValueChanged
 
-    private void jList3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jList3MouseClicked
+    private void jListDirectorioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListDirectorioMouseClicked
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int option = fileChooser.showOpenDialog(this);
@@ -502,18 +500,18 @@ public class MainFrame extends javax.swing.JFrame {
             String path = fileChooser.getSelectedFile().toString();
             rutaArchivo = path;
             DefaultListModel file = new DefaultListModel();
-            DefaultListModel methods = new DefaultListModel();
+            DefaultListModel clases = new DefaultListModel();
             file.addElement(path);
-            jList3.setModel(file);
-            jList3.setForeground(Color.black);
+            jListDirectorio.setModel(file);
+            jListDirectorio.setForeground(Color.black);
             for (File fileInside : fileChooser.getSelectedFile().listFiles()) {
                 if(fileInside.getName().endsWith(".java"))
-                    methods.addElement(fileInside.getName());
+                    clases.addElement(fileInside.getName());
             }
-            jList2.setModel(methods);
+            jListClases.setModel(clases);
 
         }
-    }//GEN-LAST:event_jList3MouseClicked
+    }//GEN-LAST:event_jListDirectorioMouseClicked
 
     private void jLabel22MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel22MouseClicked
         System.exit(0);
@@ -613,9 +611,9 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JList<String> jList1;
-    private javax.swing.JList<String> jList2;
-    private javax.swing.JList<String> jList3;
+    private javax.swing.JList<String> jListClases;
+    private javax.swing.JList<String> jListDirectorio;
+    private javax.swing.JList<String> jListMetodos;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
