@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -570,15 +572,19 @@ public class MainFrame extends javax.swing.JFrame {
                 }
             }
         }
+        //Cantidad de lineas comentadas del metodo
         int lineasCodigo = contarLineas(codigoMetodo);
         jLabel14.setText(String.valueOf(lineasCodigo));
         
+        //Cantidad de comentarios
         int cantComentarios = contarComentarios(codigoMetodo);
         jLabel15.setText(String.valueOf(cantComentarios));
         
+        //Porcentaje de lineas comentadas
         double porcComentado = ((double)cantComentarios/lineasCodigo) * 100;
         jLabel16.setText(String.format("%.2f",porcComentado));
         
+        //Complejidad ciclomatica
         int CC = calcularCC(codigoMetodo);
         jLabel17.setText(String.valueOf(CC));
         if(CC<=7)
@@ -588,6 +594,7 @@ public class MainFrame extends javax.swing.JFrame {
         else
             jLabel17.setForeground(Color.red);
         
+        //Halstead
         HalsteadMetrica halstead = new HalsteadMetrica(codigoMetodo);
         jLabel20.setText(String.valueOf(halstead.getLongitud()));
         jLabel21.setText(String.format("%.2f",halstead.getVolumen()));
@@ -595,6 +602,9 @@ public class MainFrame extends javax.swing.JFrame {
         System.out.println("Operadores unicos: " + halstead.getOperadoresUnicos());
         System.out.println("Operandos totales: " + halstead.getOperandosTotales());
         System.out.println("Operandos unicos: " + halstead.getOperandosUnicos());
+        
+        //Fan In
+        jLabel18.setText(String.valueOf(calcularFanIn(codigoMetodo)));
         
         jTextArea1.setText(codigoMetodo);
     }//GEN-LAST:event_jListMetodosValueChanged
@@ -714,5 +724,15 @@ public class MainFrame extends javax.swing.JFrame {
 	    }
         }
         return comentarios;
+    }
+
+    private int calcularFanIn(String codigoMetodo) {
+        int fanIn = 0;
+        String regex = "([a-zA-Z_][\\w\\<\\>]*)" + "\\(";
+        Pattern pat = Pattern.compile(regex);
+        Matcher mat = pat.matcher(codigoMetodo);
+        while(mat.find())
+            fanIn++;
+        return fanIn;
     }
 }
