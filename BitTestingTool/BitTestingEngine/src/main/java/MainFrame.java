@@ -1,5 +1,6 @@
 
 import HerramientasDeParser.MethodNamePrinter;
+import Metricas.HalsteadMetrica;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -572,11 +573,6 @@ public class MainFrame extends javax.swing.JFrame {
         int lineasCodigo = contarLineas(codigoMetodo);
         jLabel14.setText(String.valueOf(lineasCodigo));
         
-        /*
-        List<Comment> comentariosList = cu.getAllContainedComments();
-        int cantComentarios = comentariosList.size();
-        jLabel15.setText(String.valueOf(cantComentarios));
-        */
         int cantComentarios = contarComentarios(codigoMetodo);
         jLabel15.setText(String.valueOf(cantComentarios));
         
@@ -592,12 +588,20 @@ public class MainFrame extends javax.swing.JFrame {
         else
             jLabel17.setForeground(Color.red);
         
+        HalsteadMetrica halstead = new HalsteadMetrica(codigoMetodo);
+        jLabel20.setText(String.valueOf(halstead.getLongitud()));
+        jLabel21.setText(String.format("%.2f",halstead.getVolumen()));
+        System.out.println("Operadores totales: " + halstead.getOperadoresTotales());
+        System.out.println("Operadores unicos: " + halstead.getOperadoresUnicos());
+        System.out.println("Operandos totales: " + halstead.getOperandosTotales());
+        System.out.println("Operandos unicos: " + halstead.getOperandosUnicos());
+        
         jTextArea1.setText(codigoMetodo);
     }//GEN-LAST:event_jListMetodosValueChanged
 
     private int calcularCC(String codigoMetodo){
         int np = 0;
-        String nodosPredicado[] = {" if ", " while ", " for ", "case ", 
+        String nodosPredicado[] = {" if ", " while ", " for ", "case ", "default ", 
             "ifxyz", "whilexyz", "forxyz"};
         String codigoActual;
         String codigoMetodoModif = codigoMetodo;
