@@ -728,9 +728,11 @@ public class MainFrame extends javax.swing.JFrame {
 
     private int calcularFanIn(String codigoMetodo) {
         int fanIn = 0;
+        //Para sacar la primer linea, sino la cuenta como llamada a un metodo
+        String codigoRecortado = codigoMetodo.substring(codigoMetodo.indexOf("\n"));
         String regex = "([a-zA-Z_][\\w\\<\\>]*)" + "\\(";
         Pattern pat = Pattern.compile(regex);
-        Matcher mat = pat.matcher(codigoMetodo);
+        Matcher mat = pat.matcher(codigoRecortado);
         while(mat.find())
             fanIn++;
         return fanIn;
