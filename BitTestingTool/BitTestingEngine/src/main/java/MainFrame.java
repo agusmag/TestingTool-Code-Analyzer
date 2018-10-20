@@ -8,8 +8,11 @@ import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 import java.awt.Color;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,6 +33,9 @@ public class MainFrame extends javax.swing.JFrame {
     private int xMouse;
     private String rutaArchivo;
     CompilationUnit cu = null;
+    String path = "";
+    String claseSeleccionada = "";
+    String archivo = "";
     public MainFrame() {
         initComponents();
     }
@@ -517,8 +523,10 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jListClasesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListClasesValueChanged
-        String claseSeleccionada = jListClases.getSelectedValue();
+        claseSeleccionada = jListClases.getSelectedValue();
         System.out.println("Seleccionado: " + claseSeleccionada);
+        archivo = path + "/" + claseSeleccionada;
+        System.out.println(archivo);
         DefaultListModel lista = new DefaultListModel();
         try {
             cu = JavaParser.parse(new File(rutaArchivo +"\\"+ claseSeleccionada));
@@ -538,7 +546,7 @@ public class MainFrame extends javax.swing.JFrame {
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int option = fileChooser.showOpenDialog(this);
         if (option == JFileChooser.APPROVE_OPTION){
-            String path = fileChooser.getSelectedFile().toString();
+            path = fileChooser.getSelectedFile().toString();
             rutaArchivo = path;
             DefaultListModel file = new DefaultListModel();
             DefaultListModel clases = new DefaultListModel();
@@ -548,7 +556,10 @@ public class MainFrame extends javax.swing.JFrame {
             jListDirectorio.setForeground(Color.black);
             for (File fileInside : fileChooser.getSelectedFile().listFiles()) {
                 if(fileInside.getName().endsWith(".java"))
+                {
                     clases.addElement(fileInside.getName());
+                }
+                    
             }
             jListClases.setModel(clases);
             metodos.addElement("");
@@ -648,6 +659,14 @@ public class MainFrame extends javax.swing.JFrame {
         
         //Fan In
         jLabel18.setText(String.valueOf(calcularFanIn(codigoMetodo)));
+        
+        try {
+            //Fan Out
+            jLabel19.setText(String.valueOf(calcularFanOut(metodoElegido)));
+            System.out.println(metodoElegido);
+        } catch (IOException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         //Mostrando el codigo del metodo elegido
         jTextArea1.setText(codigoMetodo);
@@ -791,5 +810,17 @@ public class MainFrame extends javax.swing.JFrame {
         while(mat.find())
             fanIn++;
         return fanIn;
+    }
+
+    private int calcularFanOut(String metodoElegido) throws FileNotFoundException, IOException {
+        int fanOut = 0;
+        FileReader reader = new FileReader (archivo);
+        BufferedReader entrada = new BufferedReader (reader);
+        String linea = "";
+        while( (linea = entrada.readLine()) != null ){
+            if(linea.contains(metodoElegido))
+                fanOut++;
+        }
+        return fanOut -1;
     }
 }
