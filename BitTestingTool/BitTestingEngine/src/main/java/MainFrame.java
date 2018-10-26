@@ -31,11 +31,11 @@ public class MainFrame extends javax.swing.JFrame {
 
     private int yMouse;
     private int xMouse;
-    private String rutaArchivo;
     CompilationUnit cu = null;
     String path = "";
     String claseSeleccionada = "";
     String archivo = "";
+    List<String> archivos = new ArrayList<>();
     public MainFrame() {
         initComponents();
     }
@@ -524,12 +524,11 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void jListClasesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListClasesValueChanged
         claseSeleccionada = jListClases.getSelectedValue();
-        System.out.println("Seleccionado: " + claseSeleccionada);
-        archivo = path + "/" + claseSeleccionada;
+        System.out.println("Seleccionado: " + "/" + claseSeleccionada);
         System.out.println(archivo);
         DefaultListModel lista = new DefaultListModel();
         try {
-            cu = JavaParser.parse(new File(rutaArchivo +"\\"+ claseSeleccionada));
+            cu = JavaParser.parse(new File(path +"\\"+ claseSeleccionada));
         } catch (FileNotFoundException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -547,7 +546,6 @@ public class MainFrame extends javax.swing.JFrame {
         int option = fileChooser.showOpenDialog(this);
         if (option == JFileChooser.APPROVE_OPTION){
             path = fileChooser.getSelectedFile().toString();
-            rutaArchivo = path;
             DefaultListModel file = new DefaultListModel();
             DefaultListModel clases = new DefaultListModel();
             DefaultListModel metodos = new DefaultListModel();
@@ -558,6 +556,7 @@ public class MainFrame extends javax.swing.JFrame {
                 if(fileInside.getName().endsWith(".java"))
                 {
                     clases.addElement(fileInside.getName());
+                    archivos.add(path + "/" + fileInside.getName());
                 }
                     
             }
@@ -627,7 +626,7 @@ public class MainFrame extends javax.swing.JFrame {
         
         //Complejidad ciclomatica
         Map<String, Integer> aparicionesNP = new HashMap<String, Integer>();
-        int CC = calcularCC(codigoMetodo, aparicionesNP);
+        int CC = calcularCCAlternativa(codigoMetodo, aparicionesNP);
         jLabel17.setText(String.valueOf(CC));
         if(CC<=7)
             jLabel17.setForeground(Color.green);
@@ -635,6 +634,8 @@ public class MainFrame extends javax.swing.JFrame {
             jLabel17.setForeground(Color.yellow);
         else
             jLabel17.setForeground(Color.red);
+        
+        //Apariciones de nodos predicado
         Iterator<String> itPal = aparicionesNP.keySet().iterator();
         Iterator<Integer> itCant = aparicionesNP.values().iterator();
         String pal;
@@ -697,6 +698,66 @@ public class MainFrame extends javax.swing.JFrame {
             }
         }
         return np + 1;
+    }
+    
+    private int calcularCCAlternativa(String codigoMetodo, Map<String, Integer> aparicionesNP){
+        int np = 0;
+        int cant = 0;
+        String nodosPredicado[] = {" if ", " while ", " for ", "case ", "default ", 
+            "ifxyz", "whilexyz", "forxyz"};
+        String codigoActual;
+        String codigoMetodoModif = codigoMetodo;
+        codigoMetodoModif = codigoMetodoModif.replaceAll("\\(", "xyz");
+        String lineas[] = codigoMetodoModif.split("\n");
+        String posAct;
+        
+        for(String linea : lineas){
+            for(String palabra: nodosPredicado){
+                if(linea.contains(palabra)){
+                    np++;
+                    if(aparicionesNP.get(palabra)!= null){
+                        cant = aparicionesNP.get(palabra);
+                        aparicionesNP.put(palabra, cant + 1);
+                    }
+                    else
+                        aparicionesNP.put(palabra, 1);
+                }
+                    
+            }
+            
+            if(!(linea.contains("return") || linea.contains("System.out.println"))){
+                posAct = linea;
+                while (posAct.indexOf("&&") > -1) {
+                    posAct = posAct.substring(posAct.indexOf(
+                    "&&")+"&&".length(),posAct.length());
+                    np++;
+                    if(aparicionesNP.get("&&")!= null){
+                        cant = aparicionesNP.get("&&");
+                        aparicionesNP.put("&&", cant + 1);
+                    }
+                    else
+                        aparicionesNP.put("&&", 1);
+                }
+            }
+            
+            if(!(linea.contains("return") || linea.contains("System.out.println"))){
+                posAct = linea;
+                while (posAct.indexOf("||") > -1) {
+                    posAct = posAct.substring(posAct.indexOf(
+                    "||")+"||".length(),posAct.length());
+                    np++;
+                    if(aparicionesNP.get("||")!= null){
+                        cant = aparicionesNP.get("||");
+                        aparicionesNP.put("||", cant + 1);
+                    }
+                    else
+                        aparicionesNP.put("||", 1);
+                }
+            }
+            
+        }
+        
+        return np+1;
     }
     /**
      * @param args the command line arguments
@@ -776,13 +837,7 @@ public class MainFrame extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     private int contarLineas(String codigoMetodo) {
-        int cant = 0;
-        int total = codigoMetodo.length();
-        for (int i = 0; i < total; ++i) {
-            char letra = codigoMetodo.charAt(i);
-            if (letra ==  '\n') ++cant; 
-        }
-        return cant;
+        return codigoMetodo.split(System.getProperty("line.separator")).length;
     }
 
     private int contarComentarios(String codigoMetodo) {
@@ -803,7 +858,8 @@ public class MainFrame extends javax.swing.JFrame {
     private int calcularFanIn(String codigoMetodo) {
         int fanIn = 0;
         //Para sacar la primer linea, sino la cuenta como llamada a un metodo
-        String codigoRecortado = codigoMetodo.substring(codigoMetodo.indexOf("\n"));
+        String codigoRecortado = codigoMetodo.substring(
+                codigoMetodo.indexOf(System.getProperty("line.separator")));
         String regex = "([a-zA-Z_][\\w\\<\\>]*)" + "\\(";
         Pattern pat = Pattern.compile(regex);
         Matcher mat = pat.matcher(codigoRecortado);
@@ -814,13 +870,16 @@ public class MainFrame extends javax.swing.JFrame {
 
     private int calcularFanOut(String metodoElegido) throws FileNotFoundException, IOException {
         int fanOut = 0;
-        FileReader reader = new FileReader (archivo);
-        BufferedReader entrada = new BufferedReader (reader);
-        String linea = "";
-        while( (linea = entrada.readLine()) != null ){
-            if(linea.contains(metodoElegido))
-                fanOut++;
+        for(String archivo : archivos){
+            FileReader reader = new FileReader (archivo);
+            BufferedReader entrada = new BufferedReader (reader);
+            String linea = "";
+            while( (linea = entrada.readLine()) != null ){
+                if(linea.contains(metodoElegido))
+                    fanOut++;
+            }
         }
+        
         return fanOut -1;
     }
 }
